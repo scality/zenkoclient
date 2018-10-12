@@ -1,2 +1,8 @@
-{ "extends": "scality", "env": { "jest": true } }
-
+{
+    "extends": "scality",
+    "env": {
+        "jest": true,
+        "browser": true,
+        "shared-node-browser": true
+    }
+}
