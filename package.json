@@ -1,0 +1,32 @@
+{
+  "name": "zenkoclient",
+  "version": "1.0.0",
+  "description": "ZenkoClient Client SDK",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint $(git ls-files '*.js')",
+    "test": "jest test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scality/zenkoclient.git"
+  },
+  "author": "Scality",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/scality/zenkoclient/issues"
+  },
+  "homepage": "https://github.com/scality/zenkoclient#readme",
+  "dependencies": {
+    "aws-sdk": "^2.333.0"
+  },
+  "devDependencies": {
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb": "^6.2.0",
+    "eslint-config-scality": "github:scality/Guidelines",
+    "eslint-plugin-react": "^4.3.0",
+    "express": "^4.16.4",
+    "jest": "^23.6.0",
+    "uuid": "^3.3.2"
+  }
+}
