@@ -1,0 +1,23 @@
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependencies
+node_modules
+
+# Redis
+*.rdb
+
+# Build executables
+*-win.exe
+*-linux
+*-macos
+
