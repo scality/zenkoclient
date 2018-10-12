@@ -14,6 +14,10 @@ RUN apt-get update -q && apt-get -qy install curl apt-transport-https \
     && git clone https://github.com/tj/n.git \
     && make -C ./n \
     && n 8 latest \
+    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
+    && apt-get update \
+    && apt-get install yarn \
     && pip install pip==9.0.1 \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /tmp/*_packages.list

@@ -21,11 +21,11 @@ stages:
           haltOnFailure: True
       - ShellCommand:
           name: install dependencies
-          command: npm install
+          command: yarn
       - ShellCommand:
           name: run lint
-          command: npm run --silent lint -- --max-warnings 0
+          command: yarn --silent lint -- --max-warnings 0
       - ShellCommand:
           name: run test
-          command: npm run --silent test
+          command: yarn --silent test
 
