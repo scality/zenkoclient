@@ -97,6 +97,7 @@ const emptyResp = {
 };
 
 const expectedSite = 'testLocation';
+const pauseResumeServices = ['crr', 'ingestion'];
 
 const expectedMarkerValue = {
     marker: testQueryValue,
@@ -134,14 +135,26 @@ app.post('/_/backbeat/api/crr/failed', (req, resp) => {
     });
 });
 
-app.post('/_/backbeat/api/crr/:type(pause|resume)', (req, resp) => {
-    resp.send(JSON.stringify({ response: `${req.params.type} test response` }));
+app.get('/_/backbeat/api/:service/status', (req, resp) => {
+    expect(pauseResumeServices).toContain(req.params.service);
+    resp.send(JSON.stringify(
+        { response: `get ${req.params.service} test response` }));
 });
 
-app.post('/_/backbeat/api/crr/:type(pause|resume)/:Site', (req, resp) => {
+app.post('/_/backbeat/api/:service/:type(pause|resume)',
+(req, resp) => {
+    expect(pauseResumeServices).toContain(req.params.service);
+    resp.send(JSON.stringify({
+        response: `${req.params.service} ${req.params.type} test response`,
+    }));
+});
+
+app.post('/_/backbeat/api/:service/:type(pause|resume)/:Site', (req, resp) => {
+    expect(pauseResumeServices).toContain(req.params.service);
     expect(req.params.Site).toEqual(expectedSite);
     resp.send(JSON.stringify(
-        { response: `${req.params.type} ${expectedSite} test response` }));
+        { response: `${req.params.service} ${req.params.type} ` +
+                    `${expectedSite} test response` }));
 });
 
 const resumeScheduleReq = { hours: 10 };
@@ -378,12 +391,52 @@ describe('class ZenkoClient JSON api', () => {
         });
     });
 
-    describe('ZenkoClient::pauseAllSites', () => {
-        it('should return correct response', done => {
-            zenkoClient.pauseAllSites({}).promise()
+    describe('ZenkoClient::getLocationsStatus', () => {
+        it('should return correct response for crr service',
+        done => {
+            zenkoClient.getLocationsStatus().promise()
                 .then(res => {
                     expect(res).toEqual(
-                        { response: 'pause test response' });
+                        { response: 'get crr test response' });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service',
+        done => {
+            zenkoClient.getLocationsIngestionStatus().promise()
+                .then(res => {
+                    expect(res).toEqual(
+                        { response: 'get ingestion test response' });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+    });
+
+    describe('ZenkoClient::pauseAllSites', () => {
+        it('should return correct response for crr service', done => {
+            zenkoClient.pauseAllSites().promise()
+                .then(res => {
+                    expect(res).toEqual(
+                        { response: 'crr pause test response' });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service', done => {
+            zenkoClient.pauseAllIngestionSites().promise()
+                .then(res => {
+                    expect(res).toEqual(
+                        { response: 'ingestion pause test response' });
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -393,13 +446,30 @@ describe('class ZenkoClient JSON api', () => {
     });
 
     describe('ZenkoClient::pauseSite', () => {
-        it('should return correct response', done => {
+        it('should return correct response for crr service', done => {
             zenkoClient.pauseSite({
                 Site: expectedSite,
             }).promise()
                 .then(res => {
-                    expect(res).toEqual(
-                        { response: `pause ${expectedSite} test response` });
+                    expect(res).toEqual({
+                        response: `crr pause ${expectedSite} test response`,
+                    });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service', done => {
+            zenkoClient.pauseIngestionSite({
+                Site: expectedSite,
+            }).promise()
+                .then(res => {
+                    expect(res).toEqual({
+                        response: `ingestion pause ${expectedSite} ` +
+                                  'test response',
+                    });
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -409,11 +479,25 @@ describe('class ZenkoClient JSON api', () => {
     });
 
     describe('ZenkoClient::resumeAllSites', () => {
-        it('should return correct response', done => {
-            zenkoClient.resumeAllSites({}).promise()
+        it('should return correct response for crr service', done => {
+            zenkoClient.resumeAllSites().promise()
                 .then(res => {
-                    expect(res).toEqual(
-                        { response: 'resume test response' });
+                    expect(res).toEqual({
+                        response: 'crr resume test response',
+                    });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service', done => {
+            zenkoClient.resumeAllIngestionSites().promise()
+                .then(res => {
+                    expect(res).toEqual({
+                        response: 'ingestion resume test response',
+                    });
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -423,13 +507,30 @@ describe('class ZenkoClient JSON api', () => {
     });
 
     describe('ZenkoClient::resumeSite', () => {
-        it('should return correct response', done => {
+        it('should return correct response for crr service', done => {
             zenkoClient.resumeSite({
                 Site: expectedSite,
             }).promise()
                 .then(res => {
-                    expect(res).toEqual(
-                        { response: `resume ${expectedSite} test response` });
+                    expect(res).toEqual({
+                        response: `crr resume ${expectedSite} test response`,
+                    });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service', done => {
+            zenkoClient.resumeIngestionSite({
+                Site: expectedSite,
+            }).promise()
+                .then(res => {
+                    expect(res).toEqual({
+                        response: `ingestion resume ${expectedSite} ` +
+                                  'test response',
+                    });
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -506,4 +607,3 @@ describe('class ZenkoClient XML api', () => {
         });
     });
 });
-

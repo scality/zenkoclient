@@ -26,6 +26,18 @@
                 "type": "map",
                 "key": {},
                 "value": {}
+            },
+            "alias": "getLocationsReplicationStatus"
+        },
+        "getLocationsIngestionStatus": {
+            "http": {
+                "method": "GET",
+                "requestUri": "/_/backbeat/api/ingestion/status"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
             }
         },
         "listFailed": {
@@ -156,12 +168,64 @@
                 "type": "map",
                 "key": {},
                 "value": {}
+            },
+            "alias": "pauseAllReplicationSites"
+        },
+        "pauseAllIngestionSites": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/api/ingestion/pause"
+            },
+            "input": {
+                "type": "structure",
+                "members": {
+                    "Body": {
+                        "type": "binary",
+                        "isStreaming": false
+                    }
+                },
+                "payload": "Body"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
             }
         },
         "pauseSite": {
             "http": {
                 "method": "POST",
                 "requestUri": "/_/backbeat/api/crr/pause/{Site}"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "Site"
+                ],
+                "members": {
+                    "Site": {
+                        "type": "string",
+                        "location": "uri",
+                        "locationName": "Site"
+                    },
+                    "Body": {
+                        "type": "binary",
+                        "isStreaming": false
+                    }
+                },
+                "payload": "Body"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
+            },
+            "alias": "pauseReplicationSite"
+        },
+        "pauseIngestionSite": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/api/ingestion/pause/{Site}"
             },
             "input": {
                 "type": "structure",
@@ -206,12 +270,64 @@
                 "type": "map",
                 "key": {},
                 "value": {}
+            },
+            "alias": "resumeAllReplicationSites"
+        },
+        "resumeAllIngestionSites": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/api/ingestion/resume"
+            },
+            "input": {
+                "type": "structure",
+                "members": {
+                    "Body": {
+                        "type": "binary",
+                        "isStreaming": false
+                    }
+                },
+                "payload": "Body"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
             }
         },
         "resumeSite": {
             "http": {
                 "method": "POST",
                 "requestUri": "/_/backbeat/api/crr/resume/{Site}"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "Site"
+                ],
+                "members": {
+                    "Site": {
+                        "type": "string",
+                        "location": "uri",
+                        "locationName": "Site"
+                    },
+                    "Body": {
+                        "type": "binary",
+                        "isStreaming": false
+                    }
+                },
+                "payload": "Body"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
+            },
+            "alias": "resumeReplicationSite"
+        },
+        "resumeIngestionSite": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/api/ingestion/resume/{Site}"
             },
             "input": {
                 "type": "structure",
@@ -264,7 +380,8 @@
                 "type": "map",
                 "key": {},
                 "value": {}
-            }
+            },
+            "alias": "scheduleSiteReplicationResume"
         }
     },
     "shapes": {
