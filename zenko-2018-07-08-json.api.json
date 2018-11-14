@@ -381,7 +381,36 @@
                 "key": {},
                 "value": {}
             },
-            "alias": "scheduleSiteReplicationResume"
+            "alias": "scheduleReplicationSiteResume"
+        },
+        "scheduleIngestionSiteResume": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/api/ingestion/resume/{Site}/schedule"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "Site"
+                ],
+                "members": {
+                    "Site": {
+                        "type": "string",
+                        "location": "uri",
+                        "locationName": "Site"
+                    },
+                    "Body": {
+                        "type": "binary",
+                        "isStreaming": false
+                    }
+                },
+                "payload": "Body"
+            },
+            "output": {
+                "type": "map",
+                "key": {},
+                "value": {}
+            }
         }
     },
     "shapes": {

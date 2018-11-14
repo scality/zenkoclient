@@ -159,14 +159,16 @@ app.post('/_/backbeat/api/:service/:type(pause|resume)/:Site', (req, resp) => {
 
 const resumeScheduleReq = { hours: 10 };
 
-app.post('/_/backbeat/api/crr/resume/:Site/schedule', (req, resp) => {
+app.post('/_/backbeat/api/:service/resume/:Site/schedule', (req, resp) => {
     let body = '';
     req.on('data', data => { body += data; });
     req.on('end', () => {
-        expect(req.params).toEqual({ Site: expectedSite });
+        expect(pauseResumeServices).toContain(req.params.service);
+        expect(req.params.Site).toEqual(expectedSite);
         expect(body).toEqual(JSON.stringify(resumeScheduleReq));
         resp.send(JSON.stringify(
-            { response: `schedule ${expectedSite} test response` }));
+            { response: `${req.params.service} scheduled resume for ` +
+                        `${expectedSite} test response` }));
     });
 });
 const ownerId =
@@ -540,14 +542,33 @@ describe('class ZenkoClient JSON api', () => {
     });
 
     describe('ZenkoClient::scheduleSiteResume', () => {
-        it('should return correct response', done => {
+        it('should return correct response for crr service', done => {
             zenkoClient.scheduleSiteResume({
                 Site: expectedSite,
                 Body: JSON.stringify({ hours: 10 }),
             }).promise()
                 .then(res => {
-                    expect(res).toEqual(
-                        { response: `schedule ${expectedSite} test response` });
+                    expect(res).toEqual({
+                        response: 'crr scheduled resume for ' +
+                                  `${expectedSite} test response`,
+                    });
+                    return done();
+                }).catch(err => {
+                    expect(err).not.toBeTruthy();
+                    return done();
+                });
+        });
+
+        it('should return correct response for ingestion service', done => {
+            zenkoClient.scheduleIngestionSiteResume({
+                Site: expectedSite,
+                Body: JSON.stringify({ hours: 10 }),
+            }).promise()
+                .then(res => {
+                    expect(res).toEqual({
+                        response: 'ingestion scheduled resume for ' +
+                                  `${expectedSite} test response`,
+                    });
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
