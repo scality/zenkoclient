@@ -411,6 +411,38 @@
                 "key": {},
                 "value": {}
             }
+        },
+        "renameWorkflow": {
+            "http": {
+                "method": "PUT",
+                "requestUri": "/_/backbeat/workflow/{workflowId}/name"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "workflowId",
+                    "newName"
+                ],
+                "members": {
+                    "workflowId": {
+                        "location": "uri",
+                        "locationName": "workflowId"
+                    },
+                    "newName": {
+                        "type": "blob"
+                    }
+                },
+                "payload": "newName"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "status": {
+                        "type": "blob"
+                    }
+                },
+                "payload": "status"
+            }
         }
     },
     "shapes": {
