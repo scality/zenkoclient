@@ -412,10 +412,37 @@
                 "value": {}
             }
         },
+        "createWorkflow": {
+            "http": {
+                "method": "POST",
+                "requestUri": "/_/backbeat/workflow-operator/workflow"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "code"
+                ],
+                "members": {
+                    "code": {
+                        "type": "map"
+                    }
+                },
+                "payload": "code"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "workflowId": {
+                        "type": "blob"
+                    }
+                },
+                "payload": "workflowId"
+            }
+        },
         "renameWorkflow": {
             "http": {
                 "method": "PUT",
-                "requestUri": "/_/backbeat/workflow/{workflowId}/name"
+                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}/name"
             },
             "input": {
                 "type": "structure",
@@ -442,6 +469,24 @@
                     }
                 },
                 "payload": "status"
+            }
+        },
+        "listWorkflows": {
+            "http": {
+                "method": "GET",
+                "requestUri": "/_/backbeat/workflow-operator/workflow"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "workflows": {
+                        "type": "list",
+                        "member": {
+                            "shape": "workflowShape"
+                        }
+                    }
+                },
+                "payload": "workflows"
             }
         }
     },
@@ -509,6 +554,26 @@
                 },
                 "ReplicationStatus": {
                     "type": "string"
+                }
+            }
+        },
+        "workflowShape": {
+            "type": "structure",
+            "members": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "version": {
+                    "type": "integer"
                 }
             }
         }
