@@ -424,19 +424,49 @@
                 ],
                 "members": {
                     "code": {
-                        "type": "map"
+                        "type": "string"
                     }
                 },
                 "payload": "code"
             },
             "output": {
-                "type": "structure",
                 "members": {
                     "workflowId": {
-                        "type": "blob"
+                        "type": "string"
                     }
                 },
                 "payload": "workflowId"
+            }
+        },
+        "saveWorkflow": {
+            "http": {
+                "method": "PUT",
+                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}/code"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "workflowId",
+                    "code"
+                ],
+                "members": {
+                    "workflowId": {
+                        "location": "uri",
+                        "locationName": "workflowId"
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                },
+                "payload": "code"
+            },
+            "output": {
+                "members": {
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "payload": "status"
             }
         },
         "renameWorkflow": {
@@ -460,6 +490,33 @@
                     }
                 },
                 "payload": "newName"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "status": {
+                        "type": "blob"
+                    }
+                },
+                "payload": "status"
+            }
+        },
+        "deleteWorkflow": {
+            "http": {
+                "method": "DELETE",
+                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "workflowId"
+                ],
+                "members": {
+                    "workflowId": {
+                        "location": "uri",
+                        "locationName": "workflowId"
+                    }
+                }
             },
             "output": {
                 "type": "structure",
