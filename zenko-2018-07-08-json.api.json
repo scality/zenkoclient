@@ -415,7 +415,7 @@
         "createWorkflow": {
             "http": {
                 "method": "POST",
-                "requestUri": "/_/backbeat/workflow-operator/workflow"
+                "requestUri": "/_/workflow-engine-operator/api/workflow"
             },
             "input": {
                 "type": "structure",
@@ -441,7 +441,7 @@
         "saveWorkflow": {
             "http": {
                 "method": "PUT",
-                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}/code"
+                "requestUri": "/_/workflow-engine-operator/api/workflow/{workflowId}/code"
             },
             "input": {
                 "type": "structure",
@@ -472,7 +472,7 @@
         "renameWorkflow": {
             "http": {
                 "method": "PUT",
-                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}/name"
+                "requestUri": "/_/workflow-engine-operator/api/workflow/{workflowId}/name"
             },
             "input": {
                 "type": "structure",
@@ -504,7 +504,7 @@
         "deleteWorkflow": {
             "http": {
                 "method": "DELETE",
-                "requestUri": "/_/backbeat/workflow-operator/workflow/{workflowId}"
+                "requestUri": "/_/workflow-engine-operator/api/workflow/{workflowId}"
             },
             "input": {
                 "type": "structure",
@@ -531,7 +531,7 @@
         "listWorkflows": {
             "http": {
                 "method": "GET",
-                "requestUri": "/_/backbeat/workflow-operator/workflow"
+                "requestUri": "/_/workflow-engine-operator/api/workflow"
             },
             "output": {
                 "type": "structure",
