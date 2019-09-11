@@ -501,6 +501,38 @@
                 "payload": "status"
             }
         },
+        "setLatestWorkflowVersionActive": {
+            "http": {
+                "method": "PUT",
+                "requestUri": "/_/workflow-engine-operator/api/workflow/{workflowId}/active"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "workflowId",
+                    "active"
+                ],
+                "members": {
+                    "workflowId": {
+                        "location": "uri",
+                        "locationName": "workflowId"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    }
+                },
+                "payload": "active"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "status": {
+                        "type": "blob"
+                    }
+                },
+                "payload": "status"
+            }
+        },
         "deleteWorkflow": {
             "http": {
                 "method": "DELETE",
