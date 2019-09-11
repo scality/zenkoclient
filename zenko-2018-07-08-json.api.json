@@ -518,7 +518,7 @@
                         "locationName": "workflowId"
                     },
                     "active": {
-                        "type": "boolean"
+                        "type": "blob"
                     }
                 },
                 "payload": "active"
