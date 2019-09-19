@@ -577,6 +577,24 @@
                 },
                 "payload": "workflows"
             }
+        },
+        "listWorkflowStats": {
+            "http": {
+                "method": "GET",
+                "requestUri": "/_/workflow-engine-operator/api/dashboard"
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "dashboards": {
+                        "type": "list",
+                        "member": {
+                            "shape": "dashboardShape"
+                        }
+                    }
+                },
+                "payload": "dashboards"
+            }
         }
     },
     "shapes": {
@@ -663,6 +681,37 @@
                 },
                 "version": {
                     "type": "integer"
+                }
+            }
+        },
+        "dashboardShape": {
+            "type": "structure",
+            "members": {
+                "workflowid": {
+                    "type": "string"
+                },
+                "workflowversion": {
+                    "type": "integer"
+                },
+                "entries": {
+                    "type": "list",
+                    "member": {
+                        "type": "structure",
+                        "members": {
+                            "nodeid": {
+                                "type": "string"
+                            },
+                            "nbok": {
+                                "type": "integer"
+                            },
+                            "nberr": {
+                                "type": "integer"
+                            },
+                            "lasterr": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         }
