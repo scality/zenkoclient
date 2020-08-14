@@ -24,7 +24,7 @@
     "eslint": "^2.13.1",
     "eslint-config-airbnb": "^6.2.0",
     "eslint-config-scality": "github:scality/Guidelines",
-    "eslint-plugin-react": "^4.3.0",
+    "eslint-plugin-react": "^7.20.6",
     "express": "^4.16.4",
     "jest": "^23.6.0",
     "uuid": "^3.3.2"
