@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/scality/zenkoclient#readme",
   "dependencies": {
-    "aws-sdk": "^2.333.0"
+    "aws-sdk": "^2.895.0"
   },
   "devDependencies": {
     "eslint": "^2.13.1",
