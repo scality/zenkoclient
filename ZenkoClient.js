@@ -1,9 +1,11 @@
 const AWS = require('aws-sdk');
-const Service = AWS.Service;
+
+const { Service } = AWS;
 
 AWS.apiLoader.services.zenko = {};
 const ZenkoClient = Service.defineService(
-    'zenko', ['2018-07-08-json', '2018-07-11-xml']);
+    'zenko', ['2018-07-08-json', '2018-07-11-xml'],
+);
 
 /*
  * Note: a version is identified by the first 10 chars if it is not a valid
@@ -25,7 +27,7 @@ Object.assign(ZenkoClient.prototype, {
 // default to use XML when apiVersion is not specified by the user
 Object.defineProperty(AWS.apiLoader.services.zenko, 'latest', {
     get: function get() {
-        const model = require('./zenko-2018-07-11-xml.api.json');
+        const model = require('./zenko-2018-07-11-xml.api.json'); // eslint-disable-line
         return model;
     },
     enumerable: true,
@@ -35,7 +37,7 @@ Object.defineProperty(AWS.apiLoader.services.zenko, 'latest', {
 // Backbeat api specific client methods, handles JSON responses
 Object.defineProperty(AWS.apiLoader.services.zenko, '2018-07-08-json', {
     get: function get() {
-        const model = require('./zenko-2018-07-08-json.api.json');
+        const model = require('./zenko-2018-07-08-json.api.json'); // eslint-disable-line
         return model;
     },
     enumerable: true,
@@ -45,7 +47,7 @@ Object.defineProperty(AWS.apiLoader.services.zenko, '2018-07-08-json', {
 // Search specific client, regular s3 client, handles XML responses
 Object.defineProperty(AWS.apiLoader.services.zenko, '2018-07-11-xml', {
     get: function get() {
-        const model = require('./zenko-2018-07-11-xml.api.json');
+        const model = require('./zenko-2018-07-11-xml.api.json'); // eslint-disable-line
         return model;
     },
     enumerable: true,

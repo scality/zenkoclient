@@ -138,23 +138,27 @@ app.post('/_/backbeat/api/crr/failed', (req, resp) => {
 app.get('/_/backbeat/api/:service/status', (req, resp) => {
     expect(pauseResumeServices).toContain(req.params.service);
     resp.send(JSON.stringify(
-        { response: `get ${req.params.service} test response` }));
+        { response: `get ${req.params.service} test response` },
+    ));
 });
 
 app.post('/_/backbeat/api/:service/:type(pause|resume)',
-(req, resp) => {
-    expect(pauseResumeServices).toContain(req.params.service);
-    resp.send(JSON.stringify({
-        response: `${req.params.service} ${req.params.type} test response`,
-    }));
-});
+    (req, resp) => {
+        expect(pauseResumeServices).toContain(req.params.service);
+        resp.send(JSON.stringify({
+            response: `${req.params.service} ${req.params.type} test response`,
+        }));
+    });
 
 app.post('/_/backbeat/api/:service/:type(pause|resume)/:Site', (req, resp) => {
     expect(pauseResumeServices).toContain(req.params.service);
     expect(req.params.Site).toEqual(expectedSite);
     resp.send(JSON.stringify(
-        { response: `${req.params.service} ${req.params.type} ` +
-                    `${expectedSite} test response` }));
+        {
+            response: `${req.params.service} ${req.params.type} `
+                    + `${expectedSite} test response`,
+        },
+    ));
 });
 
 const resumeScheduleReq = { hours: 10 };
@@ -167,12 +171,14 @@ app.post('/_/backbeat/api/:service/resume/:Site/schedule', (req, resp) => {
         expect(req.params.Site).toEqual(expectedSite);
         expect(body).toEqual(JSON.stringify(resumeScheduleReq));
         resp.send(JSON.stringify(
-            { response: `${req.params.service} scheduled resume for ` +
-                        `${expectedSite} test response` }));
+            {
+                response: `${req.params.service} scheduled resume for `
+                        + `${expectedSite} test response`,
+            },
+        ));
     });
 });
-const ownerId =
-    '19f06f46b3fbd39f51187e962a028da7ed3b29cf13faf2919d90907b2dafdabf';
+const ownerId = '19f06f46b3fbd39f51187e962a028da7ed3b29cf13faf2919d90907b2dafdabf';
 
 const searchResp = `
 <?xml version="1.0" encoding="UTF-8"?>
@@ -238,8 +244,7 @@ describe('class ZenkoClient behavior', () => {
             });
             expect(zenkoClient.searchBucket).toBeTruthy();
             expect(zenkoClient.listFailed).toBeFalsy();
-        }
-    );
+        });
 
     it('should use xml api version',
         () => {
@@ -254,8 +259,7 @@ describe('class ZenkoClient behavior', () => {
             expect(zenkoClient.config.apiVersion).toEqual('2018-07-11-xml');
             expect(zenkoClient.searchBucket).toBeTruthy();
             expect(zenkoClient.listFailed).toBeFalsy();
-        }
-    );
+        });
 
     it('should use json api version',
         () => {
@@ -270,8 +274,7 @@ describe('class ZenkoClient behavior', () => {
             expect(zenkoClient.config.apiVersion).toEqual('2018-07-08-json');
             expect(zenkoClient.searchBucket).toBeFalsy();
             expect(zenkoClient.listFailed).toBeTruthy();
-        }
-    );
+        });
 });
 
 describe('class ZenkoClient JSON api', () => {
@@ -357,8 +360,7 @@ describe('class ZenkoClient JSON api', () => {
 
         missingParamTests.forEach(test => it(test.it, done => {
             zenkoClient.getFailedObject(test.params).promise().catch(err => {
-                const expectedMessage =
-                    `Missing required key '${test.missing}' in params`;
+                const expectedMessage = `Missing required key '${test.missing}' in params`;
                 expect(err.code).toEqual('MissingRequiredParameter');
                 expect(err.message).toEqual(expectedMessage);
                 return done();
@@ -395,30 +397,32 @@ describe('class ZenkoClient JSON api', () => {
 
     describe('ZenkoClient::getLocationsStatus', () => {
         it('should return correct response for crr service',
-        done => {
-            zenkoClient.getLocationsStatus().promise()
-                .then(res => {
-                    expect(res).toEqual(
-                        { response: 'get crr test response' });
-                    return done();
-                }).catch(err => {
-                    expect(err).not.toBeTruthy();
-                    return done();
-                });
-        });
+            done => {
+                zenkoClient.getLocationsStatus().promise()
+                    .then(res => {
+                        expect(res).toEqual(
+                            { response: 'get crr test response' },
+                        );
+                        return done();
+                    }).catch(err => {
+                        expect(err).not.toBeTruthy();
+                        return done();
+                    });
+            });
 
         it('should return correct response for ingestion service',
-        done => {
-            zenkoClient.getLocationsIngestionStatus().promise()
-                .then(res => {
-                    expect(res).toEqual(
-                        { response: 'get ingestion test response' });
-                    return done();
-                }).catch(err => {
-                    expect(err).not.toBeTruthy();
-                    return done();
-                });
-        });
+            done => {
+                zenkoClient.getLocationsIngestionStatus().promise()
+                    .then(res => {
+                        expect(res).toEqual(
+                            { response: 'get ingestion test response' },
+                        );
+                        return done();
+                    }).catch(err => {
+                        expect(err).not.toBeTruthy();
+                        return done();
+                    });
+            });
     });
 
     describe('ZenkoClient::pauseAllSites', () => {
@@ -426,7 +430,8 @@ describe('class ZenkoClient JSON api', () => {
             zenkoClient.pauseAllSites().promise()
                 .then(res => {
                     expect(res).toEqual(
-                        { response: 'crr pause test response' });
+                        { response: 'crr pause test response' },
+                    );
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -438,7 +443,8 @@ describe('class ZenkoClient JSON api', () => {
             zenkoClient.pauseAllIngestionSites().promise()
                 .then(res => {
                     expect(res).toEqual(
-                        { response: 'ingestion pause test response' });
+                        { response: 'ingestion pause test response' },
+                    );
                     return done();
                 }).catch(err => {
                     expect(err).not.toBeTruthy();
@@ -469,8 +475,8 @@ describe('class ZenkoClient JSON api', () => {
             }).promise()
                 .then(res => {
                     expect(res).toEqual({
-                        response: `ingestion pause ${expectedSite} ` +
-                                  'test response',
+                        response: `ingestion pause ${expectedSite} `
+                                  + 'test response',
                     });
                     return done();
                 }).catch(err => {
@@ -530,8 +536,8 @@ describe('class ZenkoClient JSON api', () => {
             }).promise()
                 .then(res => {
                     expect(res).toEqual({
-                        response: `ingestion resume ${expectedSite} ` +
-                                  'test response',
+                        response: `ingestion resume ${expectedSite} `
+                                  + 'test response',
                     });
                     return done();
                 }).catch(err => {
@@ -549,8 +555,8 @@ describe('class ZenkoClient JSON api', () => {
             }).promise()
                 .then(res => {
                     expect(res).toEqual({
-                        response: 'crr scheduled resume for ' +
-                                  `${expectedSite} test response`,
+                        response: 'crr scheduled resume for '
+                                  + `${expectedSite} test response`,
                     });
                     return done();
                 }).catch(err => {
@@ -566,8 +572,8 @@ describe('class ZenkoClient JSON api', () => {
             }).promise()
                 .then(res => {
                     expect(res).toEqual({
-                        response: 'ingestion scheduled resume for ' +
-                                  `${expectedSite} test response`,
+                        response: 'ingestion scheduled resume for '
+                                  + `${expectedSite} test response`,
                     });
                     return done();
                 }).catch(err => {
@@ -609,8 +615,7 @@ describe('class ZenkoClient XML api', () => {
             zenkoClient.searchBucket({
                 Bucket: 'testbucketsearch',
             }).promise().catch(err => {
-                const expectedMessage =
-                    "Missing required key 'Query' in params";
+                const expectedMessage = "Missing required key 'Query' in params";
                 expect(err.code).toEqual('MissingRequiredParameter');
                 expect(err.message).toEqual(expectedMessage);
                 return done();
