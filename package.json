@@ -1,6 +1,6 @@
 {
   "name": "zenkoclient",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Zenko Client SDK",
   "main": "index.js",
   "engines": {
@@ -26,7 +26,7 @@
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-config-scality": "github:scality/Guidelines#w/8.2/improvement/GDL-5-node-16-upgrade",
+    "eslint-config-scality": "github:scality/Guidelines#8.2.0",
     "eslint-plugin-import": "^2.20.1",
     "express": "^4.16.4",
     "jest": "^23.6.0",
