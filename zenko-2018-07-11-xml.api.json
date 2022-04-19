@@ -107,6 +107,87 @@
                     "EncodingType": {}
                 }
             }
+        },
+        "searchBucketVersions": {
+            "http": {
+                "method": "GET",
+                "requestUri": "/{Bucket}?versions=true"
+            },
+            "input": {
+                "type": "structure",
+                "required": [
+                    "Bucket",
+                    "Query"
+                ],
+                "members": {
+                    "Query": {
+                        "location": "querystring",
+                        "locationName": "search"
+                    },
+                    "Bucket": {
+                        "location": "uri",
+                        "locationName": "Bucket"
+                    },
+                    "Delimiter": {
+                        "location": "querystring",
+                        "locationName": "delimiter"
+                    },
+                    "EncodingType": {
+                        "location": "querystring",
+                        "locationName": "encoding-type"
+                    },
+                    "KeyMarker": {
+                        "location": "querystring",
+                        "locationName": "key-marker"
+                    },
+                    "MaxKeys": {
+                        "location": "querystring",
+                        "locationName": "max-keys",
+                        "type": "integer"
+                    },
+                    "Prefix": {
+                        "location": "querystring",
+                        "locationName": "prefix"
+                    },
+                    "ExpectedBucketOwner": {
+                        "location": "header",
+                        "locationName": "x-amz-expected-bucket-owner"
+                    },
+                    "VersionIdMarker":{
+                        "location": "querystring",
+                        "locationName": "version-id-marker",
+                        "type": "integer"
+                    }
+                }
+            },
+            "output": {
+                "type": "structure",
+                "members": {
+                    "IsTruncated": {
+                        "type": "boolean"
+                    },
+                    "KeyMarker": {},
+                    "VersionIdMarker": {},
+                    "NextKeyMarker": {},
+                    "NextVersionIdMarker": {},
+                    "Version": {
+                        "shape": "VersionStructure"
+                    },
+                    "DeleteMarker": {
+                        "shape": "DeleteMarkerStructure"
+                    },
+                    "Name": {},
+                    "Prefix": {},
+                    "Delimiter": {},
+                    "MaxKeys": {
+                        "type": "integer"
+                    },
+                    "CommonPrefixes": {
+                        "shape": "CommonPrefixesStructure"
+                    },
+                    "EncodingType": {}
+                }
+            }
         }
     },
     "shapes": {
@@ -146,7 +227,53 @@
                     }
                 }
             },
-            "flattened": true
+            "flattened": true 
+        },
+        "VersionStructure": {
+            "type": "list",
+            "member": {
+                "type": "structure",
+                "members": {
+                    "Key": {},
+                    "IsLatest": {
+                        "type": "boolean"
+                    },
+                    "LastModified": {
+                        "type": "timestamp"
+                    },
+                    "ETag": {},
+                    "Size": {
+                        "type": "integer"
+                    },
+                    "StorageClass": {},
+                    "Owner": {
+                        "shape": "OwnerDisplayStructure"
+                    },
+                    "VersionId": {}
+               
+                }
+            },
+            "flattened": true 
+        },
+        "DeleteMarkerStructure": {
+            "type": "list",
+            "member": {
+                "type": "structure",
+                "members": {
+                    "Key": {},
+                    "IsLatest": {
+                        "type": "boolean"
+                    },
+                    "LastModified": {
+                        "type": "timestamp"
+                    },
+                    "Owner": {
+                        "shape": "OwnerDisplayStructure"
+                    },
+                    "VersionId": {}
+                }
+            },
+            "flattened": true 
         }
     }
 }
