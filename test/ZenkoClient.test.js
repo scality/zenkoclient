@@ -179,7 +179,9 @@ app.post('/_/backbeat/api/:service/resume/:Site/schedule', (req, resp) => {
     });
 });
 const ownerId = '19f06f46b3fbd39f51187e962a028da7ed3b29cf13faf2919d90907b2dafdabf';
-
+const versionId = '39383335303133333432303839323939393939395247303030303132342e34';
+const lastModified = new Date('2022-04-13T16:16:19.103Z');
+const etag = '"53a40033eb3ff67f29dcd1aa22ed60f5"';
 const searchResp = `
 <?xml version="1.0" encoding="UTF-8"?>
 <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
@@ -202,6 +204,41 @@ const searchResp = `
 </ListBucketResult>
 `;
 
+const searchVersionResp = `
+<?xml version="1.0" encoding="UTF-8"?>
+<ListVersionsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <Name>testbucketsearchversion</Name>
+    <MaxKeys>1000</MaxKeys>
+    <IsTruncated>false</IsTruncated>
+    <Version>
+        <Key>config.json</Key>
+        <VersionId>${versionId}</VersionId>
+        <IsLatest>true</IsLatest>
+        <LastModified>2022-04-13T16:16:19.103Z</LastModified>
+        <ETag>${etag}</ETag>
+        <Size>371</Size>
+        <Owner>
+            <ID>${ownerId}</ID>
+            <DisplayName>orbit</DisplayName>
+        </Owner>
+        <StorageClass>STANDARD</StorageClass>
+    </Version>
+    <DeleteMarker>
+        <Key>meeting-83545816150.ics</Key>
+        <VersionId>${versionId}</VersionId>
+        <IsLatest>true</IsLatest>
+        <LastModified>2022-04-13T16:16:19.103Z</LastModified>
+        <ETag>${etag}</ETag>
+        <Size>0</Size>
+        <Owner>
+            <ID>${ownerId}</ID>
+            <DisplayName>orbit</DisplayName>
+        </Owner>
+        <StorageClass>STANDARD</StorageClass>
+    </DeleteMarker>
+</ListVersionsResult>
+`;
+
 const expectedSearchResult = {
     Name: 'testbucketsearch',
     Prefix: '',
@@ -222,12 +259,48 @@ const expectedSearchResult = {
     }],
 };
 
+const expectedSearchVersionResult = {
+    Name: 'testbucketsearchversion',
+    CommonPrefixes: [],
+    MaxKeys: 1000,
+    IsTruncated: false,
+    Version: [{
+        Key: 'config.json',
+        IsLatest: true,
+        LastModified: lastModified,
+        ETag: etag,
+        Size: 371,
+        Owner: {
+            ID: ownerId,
+            DisplayName: 'orbit',
+        },
+        StorageClass: 'STANDARD',
+        VersionId: versionId,
+    }],
+    DeleteMarker: [{
+        Key: 'meeting-83545816150.ics',
+        IsLatest: true,
+        LastModified: lastModified,
+        Owner: {
+            DisplayName: 'orbit',
+            ID: ownerId,
+        },
+        VersionId: versionId,
+    }],
+};
+
 const testQueryString = 'key LIKE search';
 
 app.get('/:Bucket', (req, resp) => {
-    expect(req.params.Bucket).toEqual('testbucketsearch');
-    expect(req.query.search).toEqual(testQueryString);
-    resp.send(searchResp);
+    if (Object.prototype.hasOwnProperty.call(req.query, 'versions')) {
+        expect(req.params.Bucket).toEqual('testbucketsearchversion');
+        expect(req.query.search).toEqual(testQueryString);
+        resp.send(searchVersionResp);
+    } else {
+        expect(req.params.Bucket).toEqual('testbucketsearch');
+        expect(req.query.search).toEqual(testQueryString);
+        resp.send(searchResp);
+    }
 });
 
 describe('class ZenkoClient behavior', () => {
@@ -600,6 +673,18 @@ describe('class ZenkoClient XML api', () => {
                 Query: 'key LIKE search',
             }).promise().then(res => {
                 expect(res).toEqual(expectedSearchResult);
+                return done();
+            });
+        });
+    });
+
+    describe('ZenkoClient::searchBucketVersions', () => {
+        it('should return correct response', done => {
+            zenkoClient.searchBucketVersions({
+                Bucket: 'testbucketsearchversion',
+                Query: 'key LIKE search',
+            }).promise().then(res => {
+                expect(res).toEqual(expectedSearchVersionResult);
                 return done();
             });
         });
