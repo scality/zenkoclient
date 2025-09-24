@@ -11,18 +11,18 @@ class ZenkoClient {
             endpoint: config.endpoint,
             credentials: config.credentials || {
                 accessKeyId: config.accessKeyId,
-                secretAccessKey: config.secretAccessKey
+                secretAccessKey: config.secretAccessKey,
             },
-            forcePathStyle: config.s3ForcePathStyle || config.forcePathStyle
+            forcePathStyle: config.s3ForcePathStyle || config.forcePathStyle,
         };
-        
+
         this.config = { apiVersion: config.apiVersion };
         this._jsonClient = new ZenkoJsonServiceClient(clientConfig);
         this._xmlClient = new ZenkoXmlServiceClient(clientConfig);
-        
+
         this._attachMethods();
     }
-    
+
     _attachMethods() {
         if (!this.config.apiVersion || this.config.apiVersion === '2018-07-11-xml') {
             this._attachXmlMethods();
@@ -30,88 +30,88 @@ class ZenkoClient {
             this._attachJsonMethods();
         }
     }
-    
+
     _attachXmlMethods() {
         this.listBuckets = async (params = {}) => {
             const command = new xmlCommands.ListBucketsCommand(params);
-            return await this._xmlClient.send(command);
+            return this._xmlClient.send(command);
         };
-        
-        this.searchBucketV2 = async (params) => {
+
+        this.searchBucketV2 = async params => {
             const command = new xmlCommands.SearchBucketV2Command(params);
-            return await this._xmlClient.send(command);
+            return this._xmlClient.send(command);
         };
-        
-        this.searchBucket = async (params) => {
+
+        this.searchBucket = async params => {
             const command = new xmlCommands.SearchBucketCommand(params);
-            return await this._xmlClient.send(command);
+            return this._xmlClient.send(command);
         };
-        
-        this.searchBucketVersions = async (params) => {
+
+        this.searchBucketVersions = async params => {
             const command = new xmlCommands.SearchBucketVersionsCommand(params);
-            return await this._xmlClient.send(command);
+            return this._xmlClient.send(command);
         };
     }
-    
+
     _attachJsonMethods() {
         this.checkConnection = async (params = {}) => {
             const command = new jsonCommands.CheckConnectionCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
+
         this.getLocationsStatus = async (params = {}) => {
             const command = new jsonCommands.GetLocationsStatusCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
+
         this.getIngestionStatus = async (params = {}) => {
             const command = new jsonCommands.GetIngestionStatusCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
+
         this.listFailed = async (params = {}) => {
             const command = new jsonCommands.ListFailedCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.getFailedObject = async (params) => {
+
+        this.getFailedObject = async params => {
             const command = new jsonCommands.GetFailedObjectCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.retryFailedObjects = async (params) => {
+
+        this.retryFailedObjects = async params => {
             const command = new jsonCommands.RetryFailedObjectsCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.pauseReplication = async (params) => {
+
+        this.pauseReplication = async params => {
             const command = new jsonCommands.PauseReplicationCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.pauseIngestion = async (params) => {
+
+        this.pauseIngestion = async params => {
             const command = new jsonCommands.PauseIngestionCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.pauseReplicationSite = async (params) => {
+
+        this.pauseReplicationSite = async params => {
             const command = new jsonCommands.PauseReplicationSiteCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.resumeReplication = async (params) => {
+
+        this.resumeReplication = async params => {
             const command = new jsonCommands.ResumeReplicationCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.resumeIngestion = async (params) => {
+
+        this.resumeIngestion = async params => {
             const command = new jsonCommands.ResumeIngestionCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
-        
-        this.resumeReplicationSite = async (params) => {
+
+        this.resumeReplicationSite = async params => {
             const command = new jsonCommands.ResumeReplicationSiteCommand(params);
-            return await this._jsonClient.send(command);
+            return this._jsonClient.send(command);
         };
     }
 
