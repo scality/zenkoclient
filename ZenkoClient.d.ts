@@ -10,6 +10,7 @@ export interface ZenkoClientConfig {
     };
     accessKeyId?: string;
     secretAccessKey?: string;
+    sessionToken?: string;
     region?: string;
     endpoint?: string;
     s3ForcePathStyle?: boolean;
@@ -18,7 +19,14 @@ export interface ZenkoClientConfig {
 
 export declare class ZenkoClient {
     constructor(config?: ZenkoClientConfig);
-    readonly config: { apiVersion?: string };
+    readonly config: { 
+        apiVersion?: string;
+        update: (config: {
+            accessKeyId?: string;
+            secretAccessKey?: string;
+            sessionToken?: string;
+        }) => void;
+    };
     
     listBuckets(): Promise<S3.ListBucketsOutput>;
     searchBucketV2(params: S3.ListObjectsV2Request & QueryRequest): Promise<S3.ListObjectsV2Output>;

@@ -1,6 +1,6 @@
 {
   "name": "zenkoclient",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Zenko Client SDK",
   "main": "index.js",
   "engines": {
@@ -21,7 +21,12 @@
   },
   "homepage": "https://github.com/scality/zenkoclient#readme",
   "dependencies": {
-    "aws-sdk": "^2.1005.0"
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/credential-providers": "^3.0.0",
+    "@smithy/smithy-client": "^3.0.0",
+    "@smithy/middleware-serde": "^3.0.0",
+    "@smithy/protocol-http": "^4.0.0",
+    "@smithy/types": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

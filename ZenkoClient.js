@@ -1,24 +1,47 @@
 const { ZenkoJsonServiceClient } = require('./src/generated/ZenkoJsonServiceClient');
 const { ZenkoXmlServiceClient } = require('./src/generated/ZenkoXmlServiceClient');
+const { fromCredentials } = require('@aws-sdk/credential-providers');
 
 const jsonCommands = require('./src/generated/commands');
 const xmlCommands = require('./src/generated/commands');
 
 class ZenkoClient {
     constructor(config = {}) {
-        const clientConfig = {
+        this._credentialsProvider = fromCredentials({
+            accessKeyId: config.accessKeyId || '',
+            secretAccessKey: config.secretAccessKey || '',
+            sessionToken: config.sessionToken,
+        });
+
+        this._baseConfig = {
             region: config.region || 'us-east-1',
             endpoint: config.endpoint,
-            credentials: config.credentials || {
-                accessKeyId: config.accessKeyId,
-                secretAccessKey: config.secretAccessKey,
-            },
+            credentials: this._credentialsProvider,
             forcePathStyle: config.s3ForcePathStyle || config.forcePathStyle,
         };
 
-        this.config = { apiVersion: config.apiVersion };
-        this._jsonClient = new ZenkoJsonServiceClient(clientConfig);
-        this._xmlClient = new ZenkoXmlServiceClient(clientConfig);
+        this.config = { 
+            apiVersion: config.apiVersion,
+            update: this.updateCredentials.bind(this)
+        };
+
+        this._jsonClient = new ZenkoJsonServiceClient(this._baseConfig);
+        this._xmlClient = new ZenkoXmlServiceClient(this._baseConfig);
+
+        this._attachMethods();
+    }
+
+    updateCredentials(newConfig) {
+        this._credentialsProvider = fromCredentials({
+            accessKeyId: newConfig.accessKeyId || '',
+            secretAccessKey: newConfig.secretAccessKey || '',
+            sessionToken: newConfig.sessionToken,
+        });
+
+        this._baseConfig.credentials = this._credentialsProvider;
+
+        this._jsonClient = new ZenkoJsonServiceClient(this._baseConfig);
+        this._xmlClient = new ZenkoXmlServiceClient(this._baseConfig);
 
         this._attachMethods();
     }
