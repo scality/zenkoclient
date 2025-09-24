@@ -1,8 +1,8 @@
-const { ZenkoJsonServiceClient } = require('./build/smithy/json-client/typescript-client-codegen/src/ZenkoJsonServiceClient');
-const { ZenkoXmlServiceClient } = require('./build/smithy/xml-client/typescript-client-codegen/src/ZenkoXmlServiceClient');
+const { ZenkoJsonServiceClient } = require('./src/generated/ZenkoJsonServiceClient');
+const { ZenkoXmlServiceClient } = require('./src/generated/ZenkoXmlServiceClient');
 
-const jsonCommands = require('./build/smithy/json-client/typescript-client-codegen/src/commands');
-const xmlCommands = require('./build/smithy/xml-client/typescript-client-codegen/src/commands');
+const jsonCommands = require('./src/generated/commands');
+const xmlCommands = require('./src/generated/commands');
 
 class ZenkoClient {
     constructor(config = {}) {
