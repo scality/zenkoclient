@@ -1,2 +1,0 @@
-# zenkoclient
-Zenko Client SDK
