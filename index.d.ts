@@ -1,3 +1,1 @@
-import {ZenkoClient} from './ZenkoClient'; 
-
-export default ZenkoClient;
+export = require('./ZenkoClient');

@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Zenko Client SDK",
   "main": "index.js",
+  "types": "index.d.ts",
   "engines": {
     "node": ">=16"
   },
@@ -21,9 +22,9 @@
   },
   "homepage": "https://github.com/scality/zenkoclient#readme",
   "dependencies": {
+    "@aws-crypto/sha256-browser": "^3.0.0",
     "@aws-sdk/client-s3": "^3.0.0",
-    "@aws-sdk/signature-v4": "^3.0.0",
-    "@aws-crypto/sha256-browser": "^3.0.0"
+    "@aws-sdk/signature-v4": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
