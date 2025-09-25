@@ -65,19 +65,19 @@ class ZenkoClient {
 
     _attachXmlMethods() {
         this.listBuckets = async (params = {}) => {
-            return this._makeRequest('ListBuckets', params, xmlApiModel);
+            return this._makeRequest('listBuckets', params, xmlApiModel);
         };
 
         this.searchBucketV2 = async params => {
-            return this._makeRequest('SearchBucketV2', params, xmlApiModel);
+            return this._makeRequest('searchBucketV2', params, xmlApiModel);
         };
 
         this.searchBucket = async params => {
-            return this._makeRequest('SearchBucket', params, xmlApiModel);
+            return this._makeRequest('searchBucket', params, xmlApiModel);
         };
 
         this.searchBucketVersions = async params => {
-            return this._makeRequest('SearchBucketVersions', params, xmlApiModel);
+            return this._makeRequest('searchBucketVersions', params, xmlApiModel);
         };
     }
 
