@@ -21,3 +21,5 @@ node_modules
 *-linux
 *-macos
 
+/dist
+*.tgz
