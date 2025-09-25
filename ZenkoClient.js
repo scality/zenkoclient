@@ -1,47 +1,56 @@
-const { ZenkoJsonServiceClient } = require('./src/generated/ZenkoJsonServiceClient');
-const { ZenkoXmlServiceClient } = require('./src/generated/ZenkoXmlServiceClient');
-const { fromCredentials } = require('@aws-sdk/credential-providers');
+const { SignatureV4 } = require('@aws-sdk/signature-v4');
+const { Sha256 } = require('@aws-crypto/sha256-browser');
 
-const jsonCommands = require('./src/generated/commands');
-const xmlCommands = require('./src/generated/commands');
+const jsonApiModel = require('./zenko-2018-07-08-json.api.json');
+const xmlApiModel = require('./zenko-2018-07-11-xml.api.json');
 
 class ZenkoClient {
     constructor(config = {}) {
-        this._credentialsProvider = fromCredentials({
-            accessKeyId: config.accessKeyId || '',
-            secretAccessKey: config.secretAccessKey || '',
-            sessionToken: config.sessionToken,
-        });
-
         this._baseConfig = {
             region: config.region || 'us-east-1',
             endpoint: config.endpoint,
-            credentials: this._credentialsProvider,
+            credentials: {
+                accessKeyId: config.accessKeyId || '',
+                secretAccessKey: config.secretAccessKey || '',
+                sessionToken: config.sessionToken,
+            },
             forcePathStyle: config.s3ForcePathStyle || config.forcePathStyle,
         };
+
+        // Initialize AWS SDK v3 SignatureV4 for browser
+        this._signer = new SignatureV4({
+            service: 's3',
+            region: this._baseConfig.region,
+            credentials: this._baseConfig.credentials,
+            sha256: Sha256,
+        });
 
         this.config = { 
             apiVersion: config.apiVersion,
             update: this.updateCredentials.bind(this)
         };
 
-        this._jsonClient = new ZenkoJsonServiceClient(this._baseConfig);
-        this._xmlClient = new ZenkoXmlServiceClient(this._baseConfig);
-
         this._attachMethods();
     }
 
     updateCredentials(newConfig) {
-        this._credentialsProvider = fromCredentials({
-            accessKeyId: newConfig.accessKeyId || '',
-            secretAccessKey: newConfig.secretAccessKey || '',
-            sessionToken: newConfig.sessionToken,
+        if (newConfig.accessKeyId !== undefined) {
+            this._baseConfig.credentials.accessKeyId = newConfig.accessKeyId;
+        }
+        if (newConfig.secretAccessKey !== undefined) {
+            this._baseConfig.credentials.secretAccessKey = newConfig.secretAccessKey;
+        }
+        if (newConfig.sessionToken !== undefined) {
+            this._baseConfig.credentials.sessionToken = newConfig.sessionToken;
+        }
+
+        // Recreate signer with new credentials
+        this._signer = new SignatureV4({
+            service: 's3',
+            region: this._baseConfig.region,
+            credentials: this._baseConfig.credentials,
+            sha256: Sha256,
         });
-
-        this._baseConfig.credentials = this._credentialsProvider;
-
-        this._jsonClient = new ZenkoJsonServiceClient(this._baseConfig);
-        this._xmlClient = new ZenkoXmlServiceClient(this._baseConfig);
 
         this._attachMethods();
     }
@@ -56,86 +65,169 @@ class ZenkoClient {
 
     _attachXmlMethods() {
         this.listBuckets = async (params = {}) => {
-            const command = new xmlCommands.ListBucketsCommand(params);
-            return this._xmlClient.send(command);
+            return this._makeRequest('ListBuckets', params, xmlApiModel);
         };
 
         this.searchBucketV2 = async params => {
-            const command = new xmlCommands.SearchBucketV2Command(params);
-            return this._xmlClient.send(command);
+            return this._makeRequest('SearchBucketV2', params, xmlApiModel);
         };
 
         this.searchBucket = async params => {
-            const command = new xmlCommands.SearchBucketCommand(params);
-            return this._xmlClient.send(command);
+            return this._makeRequest('SearchBucket', params, xmlApiModel);
         };
 
         this.searchBucketVersions = async params => {
-            const command = new xmlCommands.SearchBucketVersionsCommand(params);
-            return this._xmlClient.send(command);
+            return this._makeRequest('SearchBucketVersions', params, xmlApiModel);
         };
     }
 
     _attachJsonMethods() {
-        this.checkConnection = async (params = {}) => {
-            const command = new jsonCommands.CheckConnectionCommand(params);
-            return this._jsonClient.send(command);
+        const operations = jsonApiModel.operations || {};
+
+        Object.keys(operations).forEach(operationName => {
+            const methodName = operationName.charAt(0).toLowerCase() + operationName.slice(1);
+            this[methodName] = async (params = {}) => {
+                return this._makeRequest(operationName, params, jsonApiModel);
+            };
+        });
+    }
+
+    async _makeRequest(operationName, params, apiModel) {
+        const operation = apiModel.operations[operationName];
+        if (!operation) {
+            throw new Error(`Operation ${operationName} not found`);
+        }
+
+        const httpConfig = operation.http || {};
+        const method = httpConfig.method || 'GET';
+        const path = this._buildPath(httpConfig.requestUri || '/', params, operation);
+        
+        const url = new URL(path, this._baseConfig.endpoint);
+        
+        // Build headers
+        const headers = {
+            'Content-Type': apiModel.metadata.protocol === 'rest-json' ? 'application/json' : 'application/xml',
+            'User-Agent': 'zenkoclient/2.0.0',
+            'Host': url.host,
         };
 
-        this.getLocationsStatus = async (params = {}) => {
-            const command = new jsonCommands.GetLocationsStatusCommand(params);
-            return this._jsonClient.send(command);
+        // Build request body
+        let body;
+        if (method !== 'GET' && method !== 'HEAD') {
+            if (apiModel.metadata.protocol === 'rest-json') {
+                body = JSON.stringify(params);
+            } else {
+                body = this._buildXmlBody(params, operation);
+            }
+        }
+
+        // Create request object for AWS SDK v3 signing
+        const request = {
+            method,
+            protocol: url.protocol,
+            hostname: url.hostname,
+            port: url.port || (url.protocol === 'https:' ? 443 : 80),
+            path: url.pathname + url.search,
+            headers,
+            body,
         };
 
-        this.getIngestionStatus = async (params = {}) => {
-            const command = new jsonCommands.GetIngestionStatusCommand(params);
-            return this._jsonClient.send(command);
-        };
+        // Sign request using AWS SDK v3 SignatureV4
+        const signedRequest = await this._signer.sign(request);
 
-        this.listFailed = async (params = {}) => {
-            const command = new jsonCommands.ListFailedCommand(params);
-            return this._jsonClient.send(command);
-        };
+        // Execute request using browser-native fetch()
+        const fetchUrl = `${signedRequest.protocol}//${signedRequest.hostname}:${signedRequest.port}${signedRequest.path}`;
+        
+        const response = await fetch(fetchUrl, {
+            method: signedRequest.method,
+            headers: signedRequest.headers,
+            body: signedRequest.body,
+        });
 
-        this.getFailedObject = async params => {
-            const command = new jsonCommands.GetFailedObjectCommand(params);
-            return this._jsonClient.send(command);
-        };
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
 
-        this.retryFailedObjects = async params => {
-            const command = new jsonCommands.RetryFailedObjectsCommand(params);
-            return this._jsonClient.send(command);
-        };
+        // Parse response
+        const responseText = await response.text();
+        
+        if (apiModel.metadata.protocol === 'rest-json') {
+            return JSON.parse(responseText);
+        } else {
+            return this._parseXmlResponse(responseText);
+        }
+    }
 
-        this.pauseReplication = async params => {
-            const command = new jsonCommands.PauseReplicationCommand(params);
-            return this._jsonClient.send(command);
-        };
+    _buildPath(template, params, operation) {
+        let path = template;
+        
+        // Replace path parameters
+        if (operation.input && operation.input.members) {
+            Object.keys(operation.input.members).forEach(paramName => {
+                const paramConfig = operation.input.members[paramName];
+                if (paramConfig.location === 'uri' && params[paramName]) {
+                    path = path.replace(`{${paramConfig.locationName || paramName}}`, encodeURIComponent(params[paramName]));
+                }
+            });
+        }
 
-        this.pauseIngestion = async params => {
-            const command = new jsonCommands.PauseIngestionCommand(params);
-            return this._jsonClient.send(command);
-        };
+        // Add query parameters
+        const queryParams = new URLSearchParams();
+        if (operation.input && operation.input.members) {
+            Object.keys(operation.input.members).forEach(paramName => {
+                const paramConfig = operation.input.members[paramName];
+                if (paramConfig.location === 'querystring' && params[paramName] !== undefined) {
+                    queryParams.set(paramConfig.locationName || paramName, params[paramName]);
+                }
+            });
+        }
 
-        this.pauseReplicationSite = async params => {
-            const command = new jsonCommands.PauseReplicationSiteCommand(params);
-            return this._jsonClient.send(command);
-        };
+        // Add Query parameter for search operations
+        if (params.Query) {
+            queryParams.set('query', params.Query);
+        }
 
-        this.resumeReplication = async params => {
-            const command = new jsonCommands.ResumeReplicationCommand(params);
-            return this._jsonClient.send(command);
-        };
+        const queryString = queryParams.toString();
+        return queryString ? `${path}?${queryString}` : path;
+    }
 
-        this.resumeIngestion = async params => {
-            const command = new jsonCommands.ResumeIngestionCommand(params);
-            return this._jsonClient.send(command);
-        };
+    _buildXmlBody(params, operation) {
+        if (!params || Object.keys(params).length === 0) {
+            return '';
+        }
 
-        this.resumeReplicationSite = async params => {
-            const command = new jsonCommands.ResumeReplicationSiteCommand(params);
-            return this._jsonClient.send(command);
-        };
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        xml += '<Request>\n';
+        
+        Object.keys(params).forEach(key => {
+            if (key !== 'Bucket' && key !== 'Query') {
+                xml += `  <${key}>${params[key]}</${key}>\n`;
+            }
+        });
+        
+        xml += '</Request>';
+        return xml;
+    }
+
+    _parseXmlResponse(xmlText) {
+        if (!xmlText) return {};
+        
+        try {
+            const result = {};
+            const matches = xmlText.match(/<(\w+)>([^<]+)<\/\1>/g);
+            if (matches) {
+                matches.forEach(match => {
+                    const tagMatch = match.match(/<(\w+)>([^<]+)<\/\1>/);
+                    if (tagMatch) {
+                        result[tagMatch[1]] = tagMatch[2];
+                    }
+                });
+            }
+            return result;
+        } catch (error) {
+            return { rawResponse: xmlText };
+        }
     }
 
     validateService() {
