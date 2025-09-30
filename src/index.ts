@@ -68,3 +68,26 @@ export class SearchObjectsVersionCommand extends ListObjectVersionsCommand {
         }
     }
 }
+
+// Export Zenko Cloudserver Client
+export {
+  ZenkoCloudserverClient,
+  type ZenkoCloudserverClientConfig,
+  type ResponseShape,
+  type RequestShape,
+  type RetryResponseShape,
+  type ListFailedInput,
+  type ListFailedOutput,
+  type GetFailedObjectInput,
+  type GetFailedObjectOutput,
+  type RetryFailedObjectsInput,
+  type RetryFailedObjectsOutput,
+  type PauseSiteInput,
+  type ResumeSiteInput,
+  type ScheduleSiteResumeInput,
+  type PauseAllSitesInput,
+  type ResumeAllSitesInput,
+  type LocationsStatusOutput,
+  type LocationsIngestionStatusOutput,
+  type SiteOperationOutput,
+} from './zenko-cloudserver-client';
