@@ -1,6 +1,6 @@
 {
   "name": "@scality/zenkoclient",
-  "version": "2.0.0-preview.1",
+  "version": "2.0.0-preview.2",
   "description": "Zenko Client SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
